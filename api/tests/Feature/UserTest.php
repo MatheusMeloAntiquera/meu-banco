@@ -45,7 +45,7 @@ class UserTest extends TestCase
         $userCreated = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray())['data'];
         $response = $this->getJson("/api/users/{$userCreated["id"]}");
 
-        $response->assertStatus(302);
+        $response->assertStatus(200);
         $this->assertTrue($response['success']);
         $this->assertNotEmpty($response['data']);
         $this->assertIsArray($response['data']);
@@ -60,13 +60,19 @@ class UserTest extends TestCase
     public function shouldUpdateAnUserSucessfully()
     {
         $userCreated = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray())['data'];
-        $response = $this->putJson("/api/users/{$userCreated["id"]}");
-
+        $newLastName = $this->fakerBr->lastName();
+        $newEmail = $this->fakerBr->email();
+        $response = $this->putJson("/api/users/{$userCreated["id"]}", [
+            "last_name" => $newLastName,
+            "email" => $newEmail
+        ]);
         $response->assertStatus(200);
         $this->assertTrue($response['success']);
         $this->assertNotEmpty($response['data']);
         $this->assertIsArray($response['data']);
         $this->assertNotContains('balance', $response['data']);
+        $this->assertEquals($newLastName, $response['data']['last_name']);
+        $this->assertEquals($newEmail, $response['data']['email']);
     }
 
     /**
@@ -78,8 +84,7 @@ class UserTest extends TestCase
     {
         $userCreated = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray())['data'];
         $response = $this->deleteJson("/api/users/{$userCreated["id"]}");
-
         $response->assertStatus(200);
-        $this->assertEquals(['success' => true], $response);
+        $response->assertExactJson(['success' => true, "message" => "The user was deleted successfully"]);
     }
 }
