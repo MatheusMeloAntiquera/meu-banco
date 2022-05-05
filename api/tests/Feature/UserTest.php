@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserTest extends TestCase
 {
+    const API_USER_ROUTE = '/api/users';
     use UserTestTrait;
     private Generator $fakerBr;
 
@@ -26,7 +27,7 @@ class UserTest extends TestCase
      */
     public function shouldCreateAnUserSucessfully()
     {
-        $response = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray());
+        $response = $this->postJson(self::API_USER_ROUTE, $this->returnUserInsertable($this->fakerBr)->toArray());
 
         $response->assertStatus(201);
         $this->assertTrue($response['success']);
@@ -42,8 +43,8 @@ class UserTest extends TestCase
      */
     public function shouldShowAnUser()
     {
-        $userCreated = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray())['data'];
-        $response = $this->getJson("/api/users/{$userCreated["id"]}");
+        $userCreatedResponse = $this->postJson(self::API_USER_ROUTE, $this->returnUserInsertable($this->fakerBr)->toArray());
+        $response = $this->getJson(self::API_USER_ROUTE . $userCreatedResponse["data"]["id"]);
 
         $response->assertStatus(200);
         $this->assertTrue($response['success']);
@@ -59,10 +60,10 @@ class UserTest extends TestCase
      */
     public function shouldUpdateAnUserSucessfully()
     {
-        $userCreated = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray())['data'];
+        $userCreatedResponse = $this->postJson(self::API_USER_ROUTE, $this->returnUserInsertable($this->fakerBr)->toArray());
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
-        $response = $this->putJson("/api/users/{$userCreated["id"]}", [
+        $response = $this->putJson(self::API_USER_ROUTE . $userCreatedResponse['data']["id"], [
             "last_name" => $newLastName,
             "email" => $newEmail
         ]);
@@ -82,8 +83,8 @@ class UserTest extends TestCase
      */
     public function shouldDeleteAnUserSucessfully()
     {
-        $userCreated = $this->postJson('/api/users', $this->returnUserInsertable($this->fakerBr)->toArray())['data'];
-        $response = $this->deleteJson("/api/users/{$userCreated["id"]}");
+        $userCreatedResponse = $this->postJson(self::API_USER_ROUTE, $this->returnUserInsertable($this->fakerBr)->toArray());
+        $response = $this->deleteJson(self::API_USER_ROUTE . $userCreatedResponse['data']["id"]);
         $response->assertStatus(200);
         $response->assertExactJson(['success' => true, "message" => "The user was deleted successfully"]);
     }
