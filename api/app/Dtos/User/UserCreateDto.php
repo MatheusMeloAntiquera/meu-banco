@@ -2,7 +2,9 @@
 
 namespace App\Dtos\User;
 
-class UserCreateDto
+use App\Dtos\DtoInterface;
+
+class UserCreateDto implements DtoInterface
 {
     protected string $firstName;
     protected string $lastName;
@@ -29,7 +31,7 @@ class UserCreateDto
         $this->balance = $balance;
         $this->active = $active;
     }
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'first_name' => $this->firstName,
