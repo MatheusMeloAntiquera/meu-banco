@@ -6,20 +6,20 @@ use App\Dtos\DtoInterface;
 
 class UserCreateDto implements DtoInterface
 {
-    protected string $firstName;
-    protected string $lastName;
-    protected string $email;
-    protected string $password;
-    protected string $cpf;
-    protected float $balance;
-    protected bool $active;
+    protected ?string $firstName;
+    protected ?string $lastName;
+    protected ?string $email;
+    protected ?string $password;
+    protected ?string $cpf;
+    protected ?float $balance;
+    protected ?bool $active;
 
     public function __construct(
-        string $firstName,
-        string $lastName,
-        string $email,
-        string $password,
-        string $cpf,
+        ?string $firstName,
+        ?string $lastName,
+        ?string $email,
+        ?string $password,
+        ?string $cpf,
         float $balance = 0.00,
         bool $active = true
     ) {
