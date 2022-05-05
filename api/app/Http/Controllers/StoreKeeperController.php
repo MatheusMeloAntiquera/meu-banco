@@ -2,29 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Dtos\User\UserJsonDto;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Dtos\User\UserCreateDto;
 use App\Services\User\FindUserService;
 use App\Services\User\CreateUserService;
 use App\Services\User\DeleteUserService;
 use App\Services\User\UpdateUserService;
+use App\Dtos\User\StoreKeeper\StoreKeeperJsonDto;
+use App\Dtos\User\StoreKeeper\StoreKeeperCreateDto;
 
-class UserController extends Controller
+class StoreKeeperController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Rota para criar um novo usuário
+     * Rota para criar um novo lojista
      *
      * @param Request $request Dados da requisição
      * @param CreateUserService $createUserService
@@ -32,58 +22,58 @@ class UserController extends Controller
      */
     public function store(Request $request, CreateUserService $createUserService): JsonResponse
     {
-        $user = $createUserService->execute(new UserCreateDto(
+        $storekeeper = $createUserService->execute(new StoreKeeperCreateDto(
             firstName: $request->first_name,
             lastName: $request->last_name,
             email: $request->email,
             password: $request->password,
-            cpf: $request->cpf,
+            cnpj: $request->cnpj,
         ));
 
         return response()
-            ->json(['success' => true, "data" => new UserJsonDto($user)], 201);
+            ->json(['success' => true, "data" => new StoreKeeperJsonDto($storekeeper)], 201);
     }
 
     /**
-     * Rota para mostrar os dados de um usuário.
+     * Rota para mostrar os dados de um lojista.
      *
-     * @param int $id id do usuário a ser procurado
+     * @param int $id id do lojista a ser procurado
      * @param FindUserService $findUserService
      * @return JsonResponse
      */
     public function show(int $id, FindUserService $findUserService): JsonResponse
     {
-        $user = $findUserService->execute($id);
+        $storekeeper = $findUserService->execute($id);
         return response()
-            ->json(['success' => true, "data" => new UserJsonDto($user)], 200);
+            ->json(['success' => true, "data" => new StoreKeeperJsonDto($storekeeper)], 200);
     }
 
     /**
-     * Rota para atualizar dados de um usuário
+     * Rota para atualizar dados de um lojista
      *
      * @param Request $request Dados da requisição
-     * @param integer $id id do usuário a ser atualizado
+     * @param integer $id id do lojista a ser atualizado
      * @param UpdateUserService $updateUserService
      * @return JsonResponse
      */
     public function update(Request $request, int $id, UpdateUserService $updateUserService): JsonResponse
     {
-        $user = $updateUserService->execute($id, new UserCreateDto(
+        $storekeeper = $updateUserService->execute($id, new StoreKeeperCreateDto(
             firstName: $request->first_name,
             lastName: $request->last_name,
             email: $request->email,
             password: $request->password,
-            cpf: $request->cpf,
+            cnpj: $request->cnpj,
         ));
 
         return response()
-            ->json(['success' => true, "data" => new UserJsonDto($user)], 200);
+            ->json(['success' => true, "data" => new StoreKeeperJsonDto($storekeeper)], 200);
     }
 
     /**
-     * Rota para excluir um usuário
+     * Rota para excluir um lojista
      *
-     * @param integer $id id do usuário a ser excluido
+     * @param integer $id id do lojista a ser excluido
      * @param DeleteUserService $deleteUserService
      * @return JsonResponse
      */

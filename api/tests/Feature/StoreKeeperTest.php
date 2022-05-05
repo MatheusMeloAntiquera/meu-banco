@@ -27,9 +27,9 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldCreateAnUserSucessfully()
+    public function shouldCreateAStoreKeeperSucessfully()
     {
-        $response = $this->postJson(self::API_STOREKEEPER_ROUTE, $this->returnStoreKeeperInsertable($this->fakerBr)->toArray());
+        $response = $this->postJson(self::API_STOREKEEPER_ROUTE, $this->returnAStoreKeeperInsertable($this->fakerBr)->toArray());
 
         $response->assertStatus(201);
         $this->assertTrue($response['success']);
@@ -43,9 +43,9 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldShowAnUser()
+    public function shouldShowAStoreKeeper()
     {
-        $storeKeeperCreated = $this->createStoreKeeperSuccessfully();
+        $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $response = $this->getJson(self::API_STOREKEEPER_ROUTE . $storeKeeperCreated->id);
 
         $response->assertStatus(200);
@@ -60,9 +60,9 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldUpdateAnUserSuccessfully()
+    public function shouldUpdateAStoreKeeperSuccessfully()
     {
-        $storeKeeperCreated = $this->createStoreKeeperSuccessfully();
+        $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
         $response = $this->putJson(self::API_STOREKEEPER_ROUTE . $storeKeeperCreated->id, [
@@ -83,9 +83,9 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldDeleteAnUserSucessfully()
+    public function shouldDeleteAStoreKeeperSucessfully()
     {
-        $storeKeeperCreated = $this->createStoreKeeperSuccessfully();
+        $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $response = $this->deleteJson(self::API_STOREKEEPER_ROUTE . $storeKeeperCreated->id);
         $response->assertStatus(200);
         $response->assertExactJson(['success' => true, "message" => "The storekeeper was deleted successfully"]);

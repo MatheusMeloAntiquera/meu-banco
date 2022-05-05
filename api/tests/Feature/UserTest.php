@@ -30,7 +30,7 @@ class UserTest extends TestCase
      */
     public function shouldCreateAnUserSucessfully()
     {
-        $response = $this->postJson(self::API_USER_ROUTE, $this->returnUserInsertable($this->fakerBr)->toArray());
+        $response = $this->postJson(self::API_USER_ROUTE, $this->returnAnUserInsertable($this->fakerBr)->toArray());
 
         $response->assertStatus(201);
         $this->assertTrue($response['success']);
@@ -46,7 +46,7 @@ class UserTest extends TestCase
      */
     public function shouldShowAnUser()
     {
-        $userCreated = $this->createUserSuccessfully();
+        $userCreated = $this->createAnUserSuccessfully();
         $response = $this->getJson(self::API_USER_ROUTE . $userCreated->id);
 
         $response->assertStatus(200);
@@ -63,7 +63,7 @@ class UserTest extends TestCase
      */
     public function shouldUpdateAnUserSuccessfully()
     {
-        $userCreated = $this->createUserSuccessfully();
+        $userCreated = $this->createAnUserSuccessfully();
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
         $response = $this->putJson(self::API_USER_ROUTE . $userCreated->id, [
@@ -86,7 +86,7 @@ class UserTest extends TestCase
      */
     public function shouldDeleteAnUserSucessfully()
     {
-        $userCreated = $this->createUserSuccessfully();
+        $userCreated = $this->createAnUserSuccessfully();
         $response = $this->deleteJson(self::API_USER_ROUTE . $userCreated->id);
         $response->assertStatus(200);
         $response->assertExactJson(['success' => true, "message" => "The user was deleted successfully"]);

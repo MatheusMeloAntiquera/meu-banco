@@ -1,18 +1,12 @@
 <?php
 
-namespace App\Dtos\User;
+namespace App\Dtos\User\StoreKeeper;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Dtos\BaseJsonDto;
 
-class UserDto extends JsonResource
+class StoreKeeperJsonDto extends BaseJsonDto
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,
