@@ -25,9 +25,9 @@ class UserRepository
      * Encontra um usuário pelo id
      *
      * @param UserCreateDto $data
-     * @return User
+     * @return User|null
      */
-    public function findById(int $id): User
+    public function findById(int $id): ?User
     {
         return User::find($id);
     }
@@ -53,10 +53,17 @@ class UserRepository
      * Deleta um usuário pelo id
      *
      * @param UserCreateDto $data
-     * @return User
+     * @return void
      */
     public function deleteById(int $id): void
     {
         User::destroy($id);
+    }
+
+
+    public function updateBalance(int $id, float $newValue)
+    {
+        User::where('id', $id)
+            ->update(['balance' => $newValue]);
     }
 }

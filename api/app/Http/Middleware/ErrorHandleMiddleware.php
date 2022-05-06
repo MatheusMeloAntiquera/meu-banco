@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Exceptions\InvalidDataException;
+use App\Exceptions\WithHttpsCodeException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ErrorHandleMiddleware
 {
@@ -18,18 +20,22 @@ class ErrorHandleMiddleware
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
-        if (!empty($response->exception)) {
+        if (!empty($response->exception) && !$response->exception instanceof NotFoundHttpException) {
             if ($response->exception instanceof InvalidDataException) {
                 return response()
                     ->json([
-                        'success' => false,
+                        "success" => false,
                         "message" => $response->exception->getMessage(),
                         "errors" => $response->exception->getMessages()
                     ], $response->exception->getCode());
-            } else {
-                return response()
-                    ->json(['success' => false, "message" => $response->exception->getMessage()], 500);
             }
+
+            $statusCode =
+                $response->exception instanceof WithHttpsCodeException
+                ? $response->exception->getCode()
+                : 500;
+            return response()
+                ->json(["success" => false, "message" => $response->exception->getMessage()], $statusCode);
         }
         return $response;
     }
