@@ -6,11 +6,11 @@ use App\Models\User;
 use App\Models\StoreKeeper;
 use App\Dtos\User\UserCreateDto;
 use App\Dtos\User\StoreKeeper\StoreKeeperCreateDto;
-
+use Faker\Factory as Faker;
 trait UserTestTrait
 {
 
-    protected function returnAnUserInsertable($faker)
+    protected function returnAUserInsertable($faker)
     {
         return new UserCreateDto(
             firstName: $faker->firstName(),
@@ -32,27 +32,21 @@ trait UserTestTrait
         );
     }
 
-    protected function createAnUserSuccessfully(): User
+    protected function createAUserSuccessfully(): User
     {
+        $fakerBr = Faker::create('pt_BR');
         return User::factory()->create(
-            $this->returnAnUserInsertable($this->fakerBr)->toArray()
+            $this->returnAUserInsertable($fakerBr)->toArray()
         );
     }
 
     protected function createAStoreKeeperSuccessfully(): StoreKeeper
     {
+        $fakerBr = Faker::create('pt_BR');
         return StoreKeeper::factory()->create(
-            $this->returnAStoreKeeperInsertable($this->fakerBr)->toArray()
+            $this->returnAStoreKeeperInsertable($fakerBr)->toArray()
         );
     }
-
-    /**
-     * Retorna uma rota gerada pelo do `Route::apiResource`
-     *
-     * @param string $action Ação/método do controller
-     * @param integer|null $id $id do usuário
-     * @return string
-     */
 
     /**
      * Retorna uma rota gerada pelo do `Route::apiResource`

@@ -26,11 +26,11 @@ class UserTest extends BaseFeatureTest
      * @test
      * @return void
      */
-    public function shouldCreateAnUserSucessfully()
+    public function shouldCreateAUserSucessfully()
     {
         $response = $this->postJson(
             $this->getRouteApiResource(self::STORE_ACTION),
-            $this->returnAnUserInsertable($this->fakerBr)->toArray()
+            $this->returnAUserInsertable($this->fakerBr)->toArray()
         );
 
         $response->assertStatus(201);
@@ -47,7 +47,7 @@ class UserTest extends BaseFeatureTest
      */
     public function shouldShowAnUser()
     {
-        $userCreated = $this->createAnUserSuccessfully();
+        $userCreated = $this->createAUserSuccessfully();
         $response = $this->getJson(
             $this->getRouteApiResource(self::SHOW_ACTION, $userCreated->id)
         );
@@ -64,9 +64,9 @@ class UserTest extends BaseFeatureTest
      * @test
      * @return void
      */
-    public function shouldUpdateAnUserSuccessfully()
+    public function shouldUpdateAUserSuccessfully()
     {
-        $userCreated = $this->createAnUserSuccessfully();
+        $userCreated = $this->createAUserSuccessfully();
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
         $response = $this->putJson(
@@ -92,7 +92,7 @@ class UserTest extends BaseFeatureTest
      */
     public function shouldDeleteAnUserSucessfully()
     {
-        $userCreated = $this->createAnUserSuccessfully();
+        $userCreated = $this->createAUserSuccessfully();
         $response = $this->deleteJson(
             $this->getRouteApiResource(self::DESTROY_ACTION, $userCreated->id)
         );
