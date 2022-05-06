@@ -2,18 +2,17 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Faker\Generator;
+use Tests\BaseFeatureTest;
 use Faker\Factory as Faker;
 use Tests\Traits\UserTestTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class StoreKeeperTest extends TestCase
+class StoreKeeperTest extends BaseFeatureTest
 {
     use UserTestTrait;
     use RefreshDatabase;
 
-    const API_STOREKEEPER_ROUTE = '/api/storekeeper/';
     private Generator $fakerBr;
 
     protected function setUp(): void
@@ -27,9 +26,14 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldCreateAStoreKeeperSucessfully()
+    public function shouldCreateAStorekeeperSucessfully()
     {
-        $response = $this->postJson(self::API_STOREKEEPER_ROUTE, $this->returnAStoreKeeperInsertable($this->fakerBr)->toArray());
+        $response = $this->postJson(
+            $this->getRouteStoreKeeperApiResource(
+                self::STORE_ACTION
+            ),
+            $this->returnAStoreKeeperInsertable($this->fakerBr)->toArray()
+        );
 
         $response->assertStatus(201);
         $this->assertTrue($response['success']);
@@ -43,10 +47,12 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldShowAStoreKeeper()
+    public function shouldShowAStorekeeper()
     {
         $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
-        $response = $this->getJson(self::API_STOREKEEPER_ROUTE . $storeKeeperCreated->id);
+        $response = $this->getJson(
+            $this->getRouteStoreKeeperApiResource(self::SHOW_ACTION, $storeKeeperCreated->id)
+        );
 
         $response->assertStatus(200);
         $this->assertTrue($response['success']);
@@ -60,15 +66,18 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldUpdateAStoreKeeperSuccessfully()
+    public function shouldUpdateAStorekeeperSuccessfully()
     {
         $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
-        $response = $this->putJson(self::API_STOREKEEPER_ROUTE . $storeKeeperCreated->id, [
-            "last_name" => $newLastName,
-            "email" => $newEmail
-        ]);
+        $response = $this->putJson(
+            $this->getRouteStoreKeeperApiResource(self::UPDATE_ACTION, $storeKeeperCreated->id),
+            [
+                "last_name" => $newLastName,
+                "email" => $newEmail
+            ]
+        );
         $response->assertStatus(200);
         $this->assertTrue($response['success']);
         $this->assertNotEmpty($response['data']);
@@ -83,10 +92,12 @@ class StoreKeeperTest extends TestCase
      * @test
      * @return void
      */
-    public function shouldDeleteAStoreKeeperSucessfully()
+    public function shouldDeleteAStorekeeperSucessfully()
     {
         $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
-        $response = $this->deleteJson(self::API_STOREKEEPER_ROUTE . $storeKeeperCreated->id);
+        $response = $this->deleteJson(
+            $this->getRouteStoreKeeperApiResource(self::DESTROY_ACTION, $storeKeeperCreated->id)
+        );
         $response->assertStatus(200);
         $response->assertExactJson(['success' => true, "message" => "The storekeeper was deleted successfully"]);
     }

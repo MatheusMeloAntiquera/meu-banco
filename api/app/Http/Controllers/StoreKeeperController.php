@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Services\User\FindUserService;
-use App\Services\User\CreateUserService;
-use App\Services\User\DeleteUserService;
-use App\Services\User\UpdateUserService;
-use App\Dtos\User\StoreKeeper\StoreKeeperJsonDto;
+use App\Dtos\User\StoreKeeper\StoreKeeperResponseDto;
 use App\Dtos\User\StoreKeeper\StoreKeeperCreateDto;
+use App\Services\StoreKeeper\FindStoreKeeperService;
+use App\Services\StoreKeeper\CreateStoreKeeperService;
+use App\Services\StoreKeeper\DeleteStoreKeeperService;
+use App\Services\StoreKeeper\UpdateStoreKeeperService;
 
 class StoreKeeperController extends Controller
 {
@@ -17,12 +17,12 @@ class StoreKeeperController extends Controller
      * Rota para criar um novo lojista
      *
      * @param Request $request Dados da requisição
-     * @param CreateUserService $createUserService
+     * @param CreateStoreKeeperService $createStoreKeeperService
      * @return JsonResponse
      */
-    public function store(Request $request, CreateUserService $createUserService): JsonResponse
+    public function store(Request $request, CreateStoreKeeperService $createStoreKeeperService): JsonResponse
     {
-        $storekeeper = $createUserService->execute(new StoreKeeperCreateDto(
+        $storekeeper = $createStoreKeeperService->execute(new StoreKeeperCreateDto(
             firstName: $request->first_name,
             lastName: $request->last_name,
             email: $request->email,
@@ -31,21 +31,21 @@ class StoreKeeperController extends Controller
         ));
 
         return response()
-            ->json(['success' => true, "data" => new StoreKeeperJsonDto($storekeeper)], 201);
+            ->json(['success' => true, "data" => new StoreKeeperResponseDto($storekeeper)], 201);
     }
 
     /**
      * Rota para mostrar os dados de um lojista.
      *
      * @param int $id id do lojista a ser procurado
-     * @param FindUserService $findUserService
+     * @param FindStoreKeeperService $findStoreKeeperService
      * @return JsonResponse
      */
-    public function show(int $id, FindUserService $findUserService): JsonResponse
+    public function show(int $id, FindStoreKeeperService $findStoreKeeperService): JsonResponse
     {
-        $storekeeper = $findUserService->execute($id);
+        $storekeeper = $findStoreKeeperService->execute($id);
         return response()
-            ->json(['success' => true, "data" => new StoreKeeperJsonDto($storekeeper)], 200);
+            ->json(['success' => true, "data" => new StoreKeeperResponseDto($storekeeper)], 200);
     }
 
     /**
@@ -53,12 +53,12 @@ class StoreKeeperController extends Controller
      *
      * @param Request $request Dados da requisição
      * @param integer $id id do lojista a ser atualizado
-     * @param UpdateUserService $updateUserService
+     * @param UpdateStoreKeeperService $updateStoreKeeperService
      * @return JsonResponse
      */
-    public function update(Request $request, int $id, UpdateUserService $updateUserService): JsonResponse
+    public function update(Request $request, int $id, UpdateStoreKeeperService $updateStoreKeeperService): JsonResponse
     {
-        $storekeeper = $updateUserService->execute($id, new StoreKeeperCreateDto(
+        $storekeeper = $updateStoreKeeperService->execute($id, new StoreKeeperCreateDto(
             firstName: $request->first_name,
             lastName: $request->last_name,
             email: $request->email,
@@ -67,20 +67,20 @@ class StoreKeeperController extends Controller
         ));
 
         return response()
-            ->json(['success' => true, "data" => new StoreKeeperJsonDto($storekeeper)], 200);
+            ->json(['success' => true, "data" => new StoreKeeperResponseDto($storekeeper)], 200);
     }
 
     /**
      * Rota para excluir um lojista
      *
      * @param integer $id id do lojista a ser excluido
-     * @param DeleteUserService $deleteUserService
+     * @param DeleteStoreKeeperService $deleteStoreKeeperService
      * @return JsonResponse
      */
-    public function destroy(int $id, DeleteUserService $deleteUserService): JsonResponse
+    public function destroy(int $id, DeleteStoreKeeperService $deleteStoreKeeperService): JsonResponse
     {
-        $deleteUserService->execute($id);
+        $deleteStoreKeeperService->execute($id);
         return response()
-            ->json(['success' => true, "message" => "The user was deleted successfully"], 200);
+            ->json(['success' => true, "message" => "The storekeeper was deleted successfully"], 200);
     }
 }

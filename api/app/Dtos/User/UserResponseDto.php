@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Dtos\User\StoreKeeper;
+namespace App\Dtos\User;
 
-use App\Dtos\BaseJsonDto;
+use App\Dtos\BaseResponseDto;
 
-class StoreKeeperJsonDto extends BaseJsonDto
+class UserResponseDto extends BaseResponseDto
 {
     public function toArray($request): array
     {

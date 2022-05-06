@@ -21,8 +21,8 @@ class StoreKeeperFactory extends Factory
         return [
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
-            'email' => $this->faker->email(),
-            'password' => $this->faker->password(),
+            'email' => $this->faker->freeEmail(),
+            'password' => $this->faker->password(8),
             'cnpj' => $fakerBr->cnpj(false),
         ];
     }

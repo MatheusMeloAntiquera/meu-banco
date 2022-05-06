@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Dtos\User\UserJsonDto;
+use App\Dtos\User\UserResponseDto;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Dtos\User\UserCreateDto;
@@ -41,7 +41,7 @@ class UserController extends Controller
         ));
 
         return response()
-            ->json(['success' => true, "data" => new UserJsonDto($user)], 201);
+            ->json(['success' => true, "data" => new UserResponseDto($user)], 201);
     }
 
     /**
@@ -55,7 +55,7 @@ class UserController extends Controller
     {
         $user = $findUserService->execute($id);
         return response()
-            ->json(['success' => true, "data" => new UserJsonDto($user)], 200);
+            ->json(['success' => true, "data" => new UserResponseDto($user)], 200);
     }
 
     /**
@@ -77,7 +77,7 @@ class UserController extends Controller
         ));
 
         return response()
-            ->json(['success' => true, "data" => new UserJsonDto($user)], 200);
+            ->json(['success' => true, "data" => new UserResponseDto($user)], 200);
     }
 
     /**

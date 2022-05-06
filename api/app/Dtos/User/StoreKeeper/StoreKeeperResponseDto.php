@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Dtos\User;
+namespace App\Dtos\User\StoreKeeper;
 
-use App\Dtos\BaseJsonDto;
+use App\Dtos\BaseResponseDto;
 
-class UserJsonDto extends BaseJsonDto
+class StoreKeeperResponseDto extends BaseResponseDto
 {
     public function toArray($request): array
     {
@@ -13,7 +13,7 @@ class UserJsonDto extends BaseJsonDto
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
-            'cpf' => $this->cpf,
+            'cnpj' => $this->cnpj,
             'active' => $this->active,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

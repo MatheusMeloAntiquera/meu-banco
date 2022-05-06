@@ -2,19 +2,17 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use Faker\Generator;
+use Tests\BaseFeatureTest;
 use Faker\Factory as Faker;
 use Tests\Traits\UserTestTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class UserTest extends TestCase
+class UserTest extends BaseFeatureTest
 {
     use UserTestTrait;
     use RefreshDatabase;
 
-    const API_USER_ROUTE = '/api/users/';
     private Generator $fakerBr;
 
     protected function setUp(): void
@@ -30,7 +28,10 @@ class UserTest extends TestCase
      */
     public function shouldCreateAnUserSucessfully()
     {
-        $response = $this->postJson(self::API_USER_ROUTE, $this->returnAnUserInsertable($this->fakerBr)->toArray());
+        $response = $this->postJson(
+            $this->getRouteApiResource(self::STORE_ACTION),
+            $this->returnAnUserInsertable($this->fakerBr)->toArray()
+        );
 
         $response->assertStatus(201);
         $this->assertTrue($response['success']);
@@ -47,7 +48,9 @@ class UserTest extends TestCase
     public function shouldShowAnUser()
     {
         $userCreated = $this->createAnUserSuccessfully();
-        $response = $this->getJson(self::API_USER_ROUTE . $userCreated->id);
+        $response = $this->getJson(
+            $this->getRouteApiResource(self::SHOW_ACTION, $userCreated->id)
+        );
 
         $response->assertStatus(200);
         $this->assertTrue($response['success']);
@@ -66,10 +69,13 @@ class UserTest extends TestCase
         $userCreated = $this->createAnUserSuccessfully();
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
-        $response = $this->putJson(self::API_USER_ROUTE . $userCreated->id, [
-            "last_name" => $newLastName,
-            "email" => $newEmail
-        ]);
+        $response = $this->putJson(
+            $this->getRouteApiResource(self::UPDATE_ACTION, $userCreated->id),
+            [
+                "last_name" => $newLastName,
+                "email" => $newEmail
+            ]
+        );
         $response->assertStatus(200);
         $this->assertTrue($response['success']);
         $this->assertNotEmpty($response['data']);
@@ -87,7 +93,9 @@ class UserTest extends TestCase
     public function shouldDeleteAnUserSucessfully()
     {
         $userCreated = $this->createAnUserSuccessfully();
-        $response = $this->deleteJson(self::API_USER_ROUTE . $userCreated->id);
+        $response = $this->deleteJson(
+            $this->getRouteApiResource(self::DESTROY_ACTION, $userCreated->id)
+        );
         $response->assertStatus(200);
         $response->assertExactJson(['success' => true, "message" => "The user was deleted successfully"]);
     }
