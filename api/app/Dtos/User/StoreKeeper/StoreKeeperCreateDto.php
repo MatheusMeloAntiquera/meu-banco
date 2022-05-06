@@ -7,7 +7,7 @@ use App\Dtos\User\UserCreateDto;
 class StoreKeeperCreateDto extends UserCreateDto
 {
 
-    private ?string $cnpj;
+    protected ?string $cnpj;
 
     public function __construct(
         ?string $firstName,

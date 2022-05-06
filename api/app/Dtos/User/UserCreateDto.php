@@ -15,7 +15,7 @@ class UserCreateDto extends BaseDto
     protected ?bool $active;
 
     //Campos especificos para esse tipo de usuário
-    private ?string $cpf;
+    protected ?string $cpf;
 
     public function __construct(
         ?string $firstName,
