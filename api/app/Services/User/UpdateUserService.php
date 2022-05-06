@@ -22,6 +22,6 @@ class UpdateUserService
     public function execute(int $userId, UserCreateDto $userData): User
     {
         $this->findUserService->execute($userId);
-        return $this->userRepository->update($userId, $userData);;
+        return $this->userRepository->update($userId, $userData);
     }
 }

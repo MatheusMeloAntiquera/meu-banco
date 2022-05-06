@@ -19,6 +19,3 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('storekeepers', StoreKeeperController::class);
 
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });

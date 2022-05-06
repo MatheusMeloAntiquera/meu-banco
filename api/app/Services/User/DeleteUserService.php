@@ -20,6 +20,6 @@ class DeleteUserService
     public function execute(int $userId): void
     {
         $this->findUserService->execute($userId);
-        $this->userRepository->deleteById($userId);;
+        $this->userRepository->deleteById($userId);
     }
 }
