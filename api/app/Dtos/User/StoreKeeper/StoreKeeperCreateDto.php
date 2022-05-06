@@ -1,28 +1,20 @@
 <?php
 
-namespace App\Dtos\User;
+namespace App\Dtos\User\StoreKeeper;
 
-use App\Dtos\BaseDto;
+use App\Dtos\User\UserCreateDto;
 
-class UserCreateDto extends BaseDto
+class StoreKeeperCreateDto extends UserCreateDto
 {
-    //Campos em comum entre os dois tipos de usuário
-    protected ?string $firstName;
-    protected ?string $lastName;
-    protected ?string $email;
-    protected ?string $password;
-    protected ?float $balance;
-    protected ?bool $active;
 
-    //Campos especificos para esse tipo de usuário
-    private ?string $cpf;
+    private ?string $cnpj;
 
     public function __construct(
         ?string $firstName,
         ?string $lastName,
         ?string $email,
         ?string $password,
-        ?string $cpf,
+        ?string $cnpj,
         float $balance = 0.00,
         bool $active = true
     ) {
@@ -30,12 +22,13 @@ class UserCreateDto extends BaseDto
         $this->lastName = $lastName;
         $this->email = $email;
         $this->password = $password;
-        $this->cpf = $cpf;
+        $this->cnpj = $cnpj;
         $this->balance = $balance;
         $this->active = $active;
     }
 
     /**
+     * @inheritDoc
      * @override `App\Dtos\BaseDto::toArray`
      * @return array
      */
@@ -46,7 +39,7 @@ class UserCreateDto extends BaseDto
             'last_name' => $this->lastName,
             'email' => $this->email,
             'password' => $this->password,
-            'cpf' => $this->cpf,
+            'cnpj' => $this->cnpj,
             'balance' => $this->balance,
             'active' => $this->active,
         ];

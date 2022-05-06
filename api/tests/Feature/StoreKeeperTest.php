@@ -8,7 +8,7 @@ use Faker\Factory as Faker;
 use Tests\Traits\UserTestTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class UserTest extends BaseFeatureTest
+class StoreKeeperTest extends BaseFeatureTest
 {
     use UserTestTrait;
     use RefreshDatabase;
@@ -22,15 +22,17 @@ class UserTest extends BaseFeatureTest
     }
 
     /**
-     * Deverá criar um usuário com sucesso
+     * Deverá criar um lojista com sucesso
      * @test
      * @return void
      */
-    public function shouldCreateAnUserSucessfully()
+    public function shouldCreateAStorekeeperSucessfully()
     {
         $response = $this->postJson(
-            $this->getRouteApiResource(self::STORE_ACTION),
-            $this->returnAnUserInsertable($this->fakerBr)->toArray()
+            $this->getRouteStoreKeeperApiResource(
+                self::STORE_ACTION
+            ),
+            $this->returnAStoreKeeperInsertable($this->fakerBr)->toArray()
         );
 
         $response->assertStatus(201);
@@ -41,15 +43,15 @@ class UserTest extends BaseFeatureTest
     }
 
     /**
-     * Deverá mostrar os dados um usuário com sucesso
+     * Deverá mostrar os dados um lojista com sucesso
      * @test
      * @return void
      */
-    public function shouldShowAnUser()
+    public function shouldShowAStorekeeper()
     {
-        $userCreated = $this->createAnUserSuccessfully();
+        $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $response = $this->getJson(
-            $this->getRouteApiResource(self::SHOW_ACTION, $userCreated->id)
+            $this->getRouteStoreKeeperApiResource(self::SHOW_ACTION, $storeKeeperCreated->id)
         );
 
         $response->assertStatus(200);
@@ -60,17 +62,17 @@ class UserTest extends BaseFeatureTest
     }
 
     /**
-     * Deverá atualizar os dados um usuário com sucesso
+     * Deverá atualizar os dados um lojista com sucesso
      * @test
      * @return void
      */
-    public function shouldUpdateAnUserSuccessfully()
+    public function shouldUpdateAStorekeeperSuccessfully()
     {
-        $userCreated = $this->createAnUserSuccessfully();
+        $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $newLastName = $this->fakerBr->lastName();
         $newEmail = $this->fakerBr->email();
         $response = $this->putJson(
-            $this->getRouteApiResource(self::UPDATE_ACTION, $userCreated->id),
+            $this->getRouteStoreKeeperApiResource(self::UPDATE_ACTION, $storeKeeperCreated->id),
             [
                 "last_name" => $newLastName,
                 "email" => $newEmail
@@ -86,17 +88,17 @@ class UserTest extends BaseFeatureTest
     }
 
     /**
-     * Deverá deletar os dados um usuário com sucesso
+     * Deverá deletar os dados um lojista com sucesso
      * @test
      * @return void
      */
-    public function shouldDeleteAnUserSucessfully()
+    public function shouldDeleteAStorekeeperSucessfully()
     {
-        $userCreated = $this->createAnUserSuccessfully();
+        $storeKeeperCreated = $this->createAStoreKeeperSuccessfully();
         $response = $this->deleteJson(
-            $this->getRouteApiResource(self::DESTROY_ACTION, $userCreated->id)
+            $this->getRouteStoreKeeperApiResource(self::DESTROY_ACTION, $storeKeeperCreated->id)
         );
         $response->assertStatus(200);
-        $response->assertExactJson(['success' => true, "message" => "The user was deleted successfully"]);
+        $response->assertExactJson(['success' => true, "message" => "The storekeeper was deleted successfully"]);
     }
 }
