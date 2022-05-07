@@ -2,12 +2,16 @@
 
 namespace Tests\Feature;
 
+use Mockery;
 use App\Models\User;
+use Mockery\MockInterface;
 use Tests\BaseFeatureTest;
 use Tests\Traits\UserTestTrait;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Http;
 use App\Services\User\FindUserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Repositories\AuthorizationServiceRepository;
 use App\Services\User\CheckSufficientBalanceService;
 
 class UsersTransactionTest extends BaseFeatureTest
@@ -17,7 +21,7 @@ class UsersTransactionTest extends BaseFeatureTest
 
     private User $userOne, $userTwo;
     private UserRepository $userRepository;
-
+    private string $storeRoute;
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,6 +33,8 @@ class UsersTransactionTest extends BaseFeatureTest
             $this->userOne->id,
             100.00
         );
+
+        $this->storeRoute = route("transactions.store");
     }
 
     /**
@@ -39,8 +45,14 @@ class UsersTransactionTest extends BaseFeatureTest
      */
     public function aUserMustTransferMoneyToAnotherUser()
     {
+        Http::fake([
+            'https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6' => Http::response([
+                "message" => "Autorizado"
+            ], 200)
+        ]);
+
         $response = $this->postJson(
-            "/api/transaction/",
+            $this->storeRoute,
             [
                 "sender_id" => $this->userOne->id,
                 "recipient_id" => $this->userTwo->id,
@@ -68,7 +80,7 @@ class UsersTransactionTest extends BaseFeatureTest
     public function shouldNotPossibleToTransferBecauseSenderHasNotSufficientBalance()
     {
         $response = $this->postJson(
-            "/api/transaction/",
+            $this->storeRoute,
             [
                 "sender_id" => $this->userOne->id,
                 "recipient_id" => $this->userTwo->id,
@@ -90,7 +102,7 @@ class UsersTransactionTest extends BaseFeatureTest
     public function shouldNotPossibleToTransferBecauseSenderNotFound()
     {
         $response = $this->postJson(
-            "/api/transaction/",
+            $this->storeRoute,
             [
                 "sender_id" => rand(500, 1000),
                 "recipient_id" => $this->userTwo->id,
@@ -115,7 +127,7 @@ class UsersTransactionTest extends BaseFeatureTest
     public function shouldNotPossibleToTransferBecauseRecipientNotFound()
     {
         $response = $this->postJson(
-            "/api/transaction/",
+            $this->storeRoute,
             [
                 "sender_id" => $this->userOne->id,
                 "recipient_id" => rand(500, 1000),
@@ -127,6 +139,37 @@ class UsersTransactionTest extends BaseFeatureTest
         $this->assertEquals(false, $response["success"]);
         $this->assertEquals(
             FindUserService::USER_NOT_FOUND_MESSAGE,
+            $response["message"]
+        );
+    }
+
+    /**
+     * Não deverá ser possível transferir porque o serviço externo de autorização não está autorizando.
+     * @group Transaction
+     * @test
+     * @return void
+     */
+    public function shouldNotPossibleToTransferBecauseExternalServiceWasNotAuthorized()
+    {
+        Http::fake([
+            'https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6' => Http::response([
+                "message" => "Não autorizado"
+            ], 403)
+        ]);
+
+        $response = $this->postJson(
+            $this->storeRoute,
+            [
+                "sender_id" => $this->userOne->id,
+                "recipient_id" => $this->userTwo->id,
+                "value" => 100.00
+            ]
+        );
+
+        $response->assertStatus(403);
+        $this->assertEquals(false, $response["success"]);
+        $this->assertEquals(
+            "It was not possible to complete the transaction. Try again later",
             $response["message"]
         );
     }

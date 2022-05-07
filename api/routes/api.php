@@ -19,6 +19,6 @@ use App\Http\Controllers\UsersTransactionController;
 Route::apiResource('users', UserController::class);
 Route::apiResource('storekeepers', StoreKeeperController::class);
 
-Route::prefix('transaction')->group(function () {
-    Route::post('/', [UsersTransactionController::class, 'store']);
+Route::prefix('transactions')->group(function () {
+    Route::post('/', [UsersTransactionController::class, 'store'])->name('transactions.store');
 });

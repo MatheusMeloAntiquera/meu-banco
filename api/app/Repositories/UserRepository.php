@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Dtos\User\UserCreateDto;
-use Illuminate\Database\Eloquent\Model;
 
 class UserRepository
 {
