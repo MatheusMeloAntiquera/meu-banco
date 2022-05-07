@@ -4,13 +4,14 @@ namespace App\Services\User;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Exceptions\NotFoundException;
 
 /**
  * Service responsável por retornar dados de um usuário
  */
 class FindUserService
 {
+    const USER_NOT_FOUND_MESSAGE = "User not found";
     protected UserRepository $userRepository;
     public function __construct()
     {
@@ -22,7 +23,7 @@ class FindUserService
         $user = $this->userRepository->findById($userId);
 
         if (empty($user)) {
-            throw new NotFoundHttpException(message: "User not found", code: 404);
+            throw new NotFoundException(message: self::USER_NOT_FOUND_MESSAGE, code: 404);
         }
         return $user;
     }
