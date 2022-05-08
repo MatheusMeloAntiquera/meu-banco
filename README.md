@@ -6,6 +6,8 @@ REST API que simula transações de entre usuários de um banco digital.
 - Laravel - 9.0
 - PHP - 8.1.5
 - MYSQL
+- Redis
+- Queue Laravel
 
 ## Diagrama de ER
 
