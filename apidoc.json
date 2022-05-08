@@ -1,0 +1,14 @@
+{
+    "name": "Meu banco",
+    "version": "0.1.0",
+    "description": "Meu Banco Doc",
+    "title": "Meu Banco API REST",
+    "url" : "http://localhost/api",
+    "header": {
+      "title": "Documentação da API REST Meu banco"
+    },
+    "template": {
+      "showRequiredLabels": true
+    }
+  }
+  

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StoreKeeper extends Model
 {
@@ -44,4 +45,11 @@ class StoreKeeper extends Model
         'active' => 'boolean',
         'balance' => 'decimal: 2',
     ];
+
+    public function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => $attributes['first_name'] . " " . $attributes['last_name'],
+        );
+    }
 }

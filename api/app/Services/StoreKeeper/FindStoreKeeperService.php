@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class FindStoreKeeperService
 {
+    const STOREKEEPER_NOT_FOUND_MESSAGE = "Storekeeper not found";
     protected StoreKeeperRepository $storeKeeperRepository;
     public function __construct(StoreKeeperRepository $storeKeeperRepository)
     {
@@ -22,7 +23,10 @@ class FindStoreKeeperService
         $storekeeper = $this->storeKeeperRepository->findById($storeKeeperId);
 
         if (empty($storekeeper)) {
-            throw new NotFoundHttpException(message: "Storekeeper not found", code: 404);
+            throw new NotFoundHttpException(
+                message: FindStoreKeeperService::STOREKEEPER_NOT_FOUND_MESSAGE,
+                code: 404
+            );
         }
         return $storekeeper;
     }
