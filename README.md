@@ -22,3 +22,28 @@ Para atualizar a documentação use o comando:
 ```shell
 apidoc -i ./api/app/Http/Controllers/ -o ./apidoc
 ``` 
+
+## Para desenvolver
+
+Para iniciar a aplicação usando docker, primeiro entre na pasta `api`:
+```
+cd ./api
+```
+Depois rode o comando para instalar os pacotes do compose:
+```
+compose install
+```
+Depois rode o comando:
+```
+docker-composer up -d
+```
+
+## Para Testar
+entre na pasta `api`e rode o comando:
+```
+php artisan test --env=testing
+```
+ou: 
+```
+./vendor/bin/phpunit
+```
