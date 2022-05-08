@@ -12,3 +12,13 @@ REST API que simula transações de entre usuários de um banco digital.
 ## Diagrama de ER
 
 ![diagram-er.png](./diagram-er.png)
+
+## ApiDoc
+
+Para consultar a documentação da API [clique aqui](./apidoc/index.html)
+
+Para atualizar a documentação use o comando:
+
+```shell
+apidoc -i ./api/app/Http/Controllers/ -o ./apidoc
+``` 
