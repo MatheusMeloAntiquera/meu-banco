@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreKeeperController;
-use App\Http\Controllers\UsersTransactionController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +20,6 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('storekeepers', StoreKeeperController::class);
 
 Route::prefix('transactions')->group(function () {
-    Route::post('/', [UsersTransactionController::class, 'store'])->name('transactions.store');
+    Route::post('/', [TransactionController::class, 'transfToUser'])->name('transactions.toUser');
+    Route::post('/store', [TransactionController::class, 'transfToStore'])->name('transactions.toStore');
 });

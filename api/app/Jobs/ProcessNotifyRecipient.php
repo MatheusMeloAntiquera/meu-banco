@@ -3,10 +3,12 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use App\Models\StoreKeeper;
 use Illuminate\Bus\Queueable;
 use App\Models\UsersTransaction;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Models\UsersTransactionStorekeeper;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Dtos\Transaction\NotifyRecipientDto;
@@ -20,9 +22,9 @@ class ProcessNotifyRecipient implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
-    private User $recipient;
+    private User|StoreKeeper $recipient;
     private User $sender;
-    private UsersTransaction $transaction;
+    private UsersTransaction|UsersTransactionStorekeeper $transaction;
 
     public $tries = 3;
 
@@ -31,8 +33,11 @@ class ProcessNotifyRecipient implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $recipient, User $sender, UsersTransaction $transaction)
-    {
+    public function __construct(
+        User $sender,
+        User|StoreKeeper $recipient,
+        UsersTransaction|UsersTransactionStorekeeper $transaction
+    ) {
         $this->recipient = $recipient;
         $this->sender = $sender;
         $this->transaction = $transaction;
