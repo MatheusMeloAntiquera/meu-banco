@@ -15,7 +15,7 @@ REST API que simula transações de entre usuários de um banco digital.
 
 ## ApiDoc
 
-Para consultar a documentação da API [clique aqui](./apidoc/index.html)
+Para consultar a documentação da API [clique aqui](https://htmlpreview.github.io/?https://github.com/MatheusMeloAntiquera/meu-banco/blob/master/apidoc/index.html)
 
 Para atualizar a documentação use o comando:
 
