@@ -59,7 +59,6 @@ class UserRepository
         User::destroy($id);
     }
 
-
     public function updateBalance(int $id, float $newValue)
     {
         User::where('id', $id)

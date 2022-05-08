@@ -24,9 +24,9 @@ class StoreKeeperRepository
      * Encontra um usuário pelo id
      *
      * @param UserCreateDto $data
-     * @return StoreKeeper
+     * @return StoreKeeper|null
      */
-    public function findById(int $id): StoreKeeper
+    public function findById(int $id): ?StoreKeeper
     {
         return StoreKeeper::find($id);
     }
@@ -57,5 +57,11 @@ class StoreKeeperRepository
     public function deleteById(int $id): void
     {
         StoreKeeper::destroy($id);
+    }
+
+    public function updateBalance(int $id, float $newValue)
+    {
+        StoreKeeper::where('id', $id)
+            ->update(['balance' => $newValue]);
     }
 }

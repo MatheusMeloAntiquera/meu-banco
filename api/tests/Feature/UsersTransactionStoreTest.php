@@ -2,53 +2,56 @@
 
 namespace Tests\Feature;
 
-use Mockery;
 use App\Models\User;
-use Mockery\MockInterface;
 use Tests\BaseFeatureTest;
+use App\Models\StoreKeeper;
 use Tests\Traits\UserTestTrait;
 use App\Jobs\ProcessNotifyRecipient;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use App\Services\User\FindUserService;
+use App\Repositories\StoreKeeperRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Repositories\AuthorizationServiceRepository;
+use App\Services\StoreKeeper\FindStoreKeeperService;
 use App\Services\User\CheckSufficientBalanceService;
 
-class UsersTransactionTest extends BaseFeatureTest
+class UsersTransactionStoreTest extends BaseFeatureTest
 {
     use RefreshDatabase;
     use UserTestTrait;
 
-    private User $userOne, $userTwo;
+    private User $user;
+    private StoreKeeper $storekeeper;
     private UserRepository $userRepository;
+    private StoreKeeperRepository $storekeeperRepository;
     private string $storeRoute;
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userOne = $this->createAUserSuccessfully();
-        $this->userTwo = $this->createAUserSuccessfully();
+        $this->user = $this->createAUserSuccessfully();
+        $this->storekeeper = $this->createAStoreKeeperSuccessfully();
         $this->userRepository = new UserRepository();
+        $this->storekeeperRepository = new StoreKeeperRepository();
 
         $this->userRepository->updateBalance(
-            $this->userOne->id,
+            $this->user->id,
             100.00
         );
 
-        $this->storeRoute = route("transactions.toUser");
+        $this->storeRoute = route("transactions.toStore");
 
         //Cria uma fila "fake", ou seja, não grava os jobs de verdade no banco
         Queue::fake();
     }
 
     /**
-     * Um usuário deverá conseguir pagar outro usuário
+     * Um usuário deverá conseguir transferir para um lojista
      * @group Transaction
      * @test
      * @return void
      */
-    public function aUserMustTransferMoneyToAnotherUser()
+    public function aUserMustTransferMoneyToAStorekeeper()
     {
         Http::fake([
             'https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6' => Http::response([
@@ -59,28 +62,27 @@ class UsersTransactionTest extends BaseFeatureTest
         $response = $this->postJson(
             $this->storeRoute,
             [
-                "sender_id" => $this->userOne->id,
-                "recipient_id" => $this->userTwo->id,
+                "sender_id" => $this->user->id,
+                "recipient_id" => $this->storekeeper->id,
                 "value" => 100.00
             ]
         );
 
         $response->assertStatus(201);
-        $this->assertEquals(true, $response["success"]);
         $this->assertArrayHasKey("transaction_id", $response);
         $this->assertIsInt($response["transaction_id"]);
-        $userOneUpdated = $this->userRepository->findById($this->userOne->id);
-        $userTwoUpdated = $this->userRepository->findById($this->userTwo->id);
+        $userUpdated = $this->userRepository->findById($this->user->id);
+        $storekeeperUpdated = $this->storekeeperRepository->findById($this->storekeeper->id);
 
-        $this->assertEquals(0.0, $userOneUpdated->balance);
-        $this->assertEquals(100.0, $userTwoUpdated->balance);
+        $this->assertEquals(0.0, $userUpdated->balance);
+        $this->assertEquals(100.0, $storekeeperUpdated->balance);
 
         // Verifica se foi criado o job para a fila notificação do usuário
         Queue::assertPushedOn('notify', ProcessNotifyRecipient::class);
     }
 
     /**
-     * Não deve ser possível transferir o dinheiro para outro usuário porque o remetente não tem saldo suficiente
+     * Não deve ser possível transferir o dinheiro para um lojista porque o remetente não tem saldo suficiente
      * @group Transaction
      * @test
      * @return void
@@ -90,14 +92,13 @@ class UsersTransactionTest extends BaseFeatureTest
         $response = $this->postJson(
             $this->storeRoute,
             [
-                "sender_id" => $this->userOne->id,
-                "recipient_id" => $this->userTwo->id,
+                "sender_id" => $this->user->id,
+                "recipient_id" => $this->storekeeper->id,
                 "value" => 150.00
             ]
         );
 
         $response->assertStatus(403);
-        $this->assertEquals(false, $response["success"]);
         $this->assertEquals(CheckSufficientBalanceService::ERROR_MESSAGE, $response["message"]);
     }
 
@@ -113,13 +114,12 @@ class UsersTransactionTest extends BaseFeatureTest
             $this->storeRoute,
             [
                 "sender_id" => rand(500, 1000),
-                "recipient_id" => $this->userTwo->id,
+                "recipient_id" => $this->storekeeper->id,
                 "value" => 100.00
             ]
         );
 
         $response->assertStatus(404);
-        $this->assertEquals(false, $response["success"]);
         $this->assertEquals(
             FindUserService::USER_NOT_FOUND_MESSAGE,
             $response["message"]
@@ -132,21 +132,20 @@ class UsersTransactionTest extends BaseFeatureTest
      * @test
      * @return void
      */
-    public function shouldNotPossibleToTransferBecauseRecipientNotFound()
+    public function shouldNotPossibleToTransferBecauseStorekeeperNotFound()
     {
         $response = $this->postJson(
             $this->storeRoute,
             [
-                "sender_id" => $this->userOne->id,
+                "sender_id" => $this->user->id,
                 "recipient_id" => rand(500, 1000),
                 "value" => 100.00
             ]
         );
 
         $response->assertStatus(404);
-        $this->assertEquals(false, $response["success"]);
         $this->assertEquals(
-            FindUserService::USER_NOT_FOUND_MESSAGE,
+            FindStoreKeeperService::STOREKEEPER_NOT_FOUND_MESSAGE,
             $response["message"]
         );
     }
@@ -168,14 +167,13 @@ class UsersTransactionTest extends BaseFeatureTest
         $response = $this->postJson(
             $this->storeRoute,
             [
-                "sender_id" => $this->userOne->id,
-                "recipient_id" => $this->userTwo->id,
+                "sender_id" => $this->user->id,
+                "recipient_id" => $this->storekeeper->id,
                 "value" => 100.00
             ]
         );
 
         $response->assertStatus(403);
-        $this->assertEquals(false, $response["success"]);
         $this->assertEquals(
             "It was not possible to complete the transaction. Try again later",
             $response["message"]
