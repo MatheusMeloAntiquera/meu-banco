@@ -7,8 +7,10 @@ use App\Models\User;
 use Mockery\MockInterface;
 use Tests\BaseFeatureTest;
 use Tests\Traits\UserTestTrait;
+use App\Jobs\ProcessNotifyRecipient;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use App\Services\User\FindUserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Repositories\AuthorizationServiceRepository;
@@ -35,6 +37,9 @@ class UsersTransactionTest extends BaseFeatureTest
         );
 
         $this->storeRoute = route("transactions.store");
+
+        //Cria uma fila "fake", ou seja, não grava os jobs de verdade no banco
+        Queue::fake();
     }
 
     /**
@@ -69,6 +74,9 @@ class UsersTransactionTest extends BaseFeatureTest
 
         $this->assertEquals(0.0, $userOneUpdated->balance);
         $this->assertEquals(100.0, $userTwoUpdated->balance);
+
+        // Verifica se foi criado o job para a fila notificação do usuário
+        Queue::assertPushedOn('notify', ProcessNotifyRecipient::class);
     }
 
     /**

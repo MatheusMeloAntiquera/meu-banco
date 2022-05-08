@@ -5,6 +5,7 @@ namespace App\Services\Transaction;
 use Throwable;
 use App\Models\User;
 use App\Models\UsersTransaction;
+use App\Jobs\ProcessNotifyRecipient;
 use App\Repositories\BaseRepository;
 use App\Repositories\UserRepository;
 use App\Services\User\FindUserService;
@@ -75,16 +76,22 @@ class CreateTransactionService
             $this->checkAuthorizationOnExternalService();
 
             $this->baseRepository->commit();
-            return $transaction;
+
         } catch (Throwable $e) {
+            // dd($e);
             //Todo: criar log para exception
             $this->baseRepository->rollBack();
             throw new TransactionException("It was not possible to complete the transaction. Try again later", 403);
         }
-        return $this->transactionRepository->create(
-            $data,
-            new AuthorizationServiceRepository()
+
+        //Notifica o usuário recebedor
+        ProcessNotifyRecipient::dispatch(
+            $this->sender,
+            $this->recipient,
+            $transaction,
         );
+
+        return $transaction;
     }
     /**
      * Checa se a transferencia foi autorizada pelo serviço externo
