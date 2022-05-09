@@ -9,6 +9,14 @@ REST API que simula transações de entre usuários de um banco digital.
 - Redis
 - Queue Laravel
 
+## Kanban utilizado durante o projeto
+https://github.com/MatheusMeloAntiquera/meu-banco/projects/2
+
+## CI do Projeto
+Foi criado um workflow no repositório para executar os testes ao atualizar a branch develop
+
+Historíco desse workflow: https://github.com/MatheusMeloAntiquera/meu-banco/actions/workflows/laravel.yml
+
 ## Diagrama de ER
 
 ![diagram-er.png](./diagram-er.png)
