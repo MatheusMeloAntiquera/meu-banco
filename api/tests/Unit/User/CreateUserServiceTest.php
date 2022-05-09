@@ -68,7 +68,7 @@ class CreateUserServiceTest extends TestCase
         $this->createUserService = App::make(CreateUserService::class);
 
         $userCreated = $this->createUserService->execute($userData);
-        dump($userCreated);
+
         $this->assertInstanceOf(User::class, $userCreated);
         //Campos preenchidos
         $this->assertEquals($userData->firstName, $userCreated->first_name);
