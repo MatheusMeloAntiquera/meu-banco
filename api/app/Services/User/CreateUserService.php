@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Validator;
  */
 class CreateUserService
 {
-    protected UserRepository $userRepository;
-    public function __construct()
+    const DATA_USER_INVALID = 'The user data is invalid';
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userRepository = new UserRepository();
+        $this->userRepository = $userRepository;
     }
 
     public function execute(UserCreateDto $userData): User
@@ -37,7 +37,7 @@ class CreateUserService
         ]);
 
         if ($validator->fails()) {
-            throw new InvalidDataException("The user data is invalid", $validator->errors()->getMessages());
+            throw new InvalidDataException(self::DATA_USER_INVALID, $validator->errors()->getMessages());
         }
     }
 }

@@ -2,13 +2,18 @@
 
 namespace Tests\Unit\User;
 
+use Mockery;
 use Exception;
 use Tests\TestCase;
 use App\Models\User;
-use Faker\Generator;
 
+use Faker\Generator;
+use Mockery\MockInterface;
 use Faker\Factory as Faker;
+use Tests\Traits\UserTestTrait;
 use App\Dtos\User\UserCreateDto;
+use Illuminate\Support\Facades\App;
+use App\Repositories\UserRepository;
 use App\Exceptions\InvalidDataException;
 use App\Services\User\CreateUserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,6 +22,7 @@ class CreateUserServiceTest extends TestCase
 {
 
     use RefreshDatabase;
+    use UserTestTrait;
 
     private CreateUserService $createUserService;
     private Generator $fakerBr;
@@ -24,7 +30,6 @@ class CreateUserServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->fakerBr = Faker::create('pt_BR');
-        $this->createUserService = new CreateUserService();
         parent::setUp();
     }
     /**
@@ -35,6 +40,32 @@ class CreateUserServiceTest extends TestCase
     public function shouldCreateAUserSucessfully()
     {
         $userData = $this->returnUserInsertable();
+        $mockUserRepository = $this->partialMock(
+            UserRepository::class,
+            function (MockInterface $mock) use ($userData) {
+                $user = User::factory()->make([
+                    'first_name' =>  $userData->firstName,
+                    'last_name' =>  $userData->lastName,
+                    'email' =>  $userData->email,
+                    'password' =>  $userData->password,
+                    'cpf' =>  $userData->cpf,
+                    'active' => true,
+                    'balance' => 0.00
+                ]);
+                $mock->shouldReceive('create')->once()->andReturn($user);
+            }
+        );
+
+        /**
+         * @var \Mockery\MockInterface $mockCreateUserService
+         */
+        $mockCreateUserService = Mockery::mock(CreateUserService::class, [$mockUserRepository]);
+        $mockCreateUserService->shouldAllowMockingProtectedMethods()->shouldReceive('validateUserData')->once();
+        $this->instance(
+            CreateUserService::class,
+            $mockCreateUserService->makePartial()
+        );
+        $this->createUserService = App::make(CreateUserService::class);
 
         $userCreated = $this->createUserService->execute($userData);
 
@@ -57,6 +88,20 @@ class CreateUserServiceTest extends TestCase
      */
     public function shouldNotBePossibleCreateAUserBecauseDataIsIncorret()
     {
+        /**
+         * @var \Mockery\MockInterface $mockCreateUserService
+         */
+        $mockCreateUserService = Mockery::mock(CreateUserService::class);
+        $mockCreateUserService->shouldAllowMockingProtectedMethods()
+            ->shouldReceive('validateUserData')
+            ->once()
+            ->andThrow(new InvalidDataException(CreateUserService::DATA_USER_INVALID, []));
+
+        $this->instance(
+            CreateUserService::class,
+            $mockCreateUserService->makePartial()
+        );
+        $this->createUserService = App::make(CreateUserService::class);
         $this->expectException(InvalidDataException::class);
         $userData = new UserCreateDto(
             firstName: '',
@@ -75,6 +120,24 @@ class CreateUserServiceTest extends TestCase
      */
     public function shouldNotBePossibleCreateAUserBecauseEmailIsAlreadyUsed()
     {
+
+        /**
+         * @var \Mockery\MockInterface $mockCreateUserService
+         */
+        $mockCreateUserService = Mockery::mock(CreateUserService::class);
+        $mockCreateUserService->shouldAllowMockingProtectedMethods()
+            ->shouldReceive('validateUserData')
+            ->once()
+            ->andThrow(new InvalidDataException(CreateUserService::DATA_USER_INVALID, ["email" => [
+                "The email has already been taken."
+            ]]));
+
+        $this->instance(
+            CreateUserService::class,
+            $mockCreateUserService->makePartial()
+        );
+        $this->createUserService = App::make(CreateUserService::class);
+
         try {
             $userCreated = $this->createUserService->execute($this->returnUserInsertable());
             $userData = new UserCreateDto(
@@ -100,6 +163,23 @@ class CreateUserServiceTest extends TestCase
      */
     public function shouldNotBePossibleCreateAUserBecauseCpfIsAlreadyUsed()
     {
+        /**
+         * @var \Mockery\MockInterface $mockCreateUserService
+         */
+        $mockCreateUserService = Mockery::mock(CreateUserService::class);
+        $mockCreateUserService->shouldAllowMockingProtectedMethods()
+            ->shouldReceive('validateUserData')
+            ->once()
+            ->andThrow(new InvalidDataException(CreateUserService::DATA_USER_INVALID, ["cpf" => [
+                "The cpf has already been taken."
+            ]]));
+
+        $this->instance(
+            CreateUserService::class,
+            $mockCreateUserService->makePartial()
+        );
+        $this->createUserService = App::make(CreateUserService::class);
+
         try {
             $userCreated = $this->createUserService->execute($this->returnUserInsertable());
             $userData = new UserCreateDto(
